@@ -15,32 +15,37 @@ def make_haiku(text):
 	print('recieved text: ' + text)
 
 
-def record_tweet_info(tweet):
+def record_tweet_info(tweet, mentions_list):
 	if not tweet:
 		print('Error: tweet is empty')
-		return;
+		return mentions_list;
 
 	tweet_info = f"Tweet sent by @{tweet.author.name} on {tweet.created_at}: {tweet.text}"
-	recent_mentions.append(tweet_info)
 
-	# resize list if necessary
-	resize_list(num_mention)
+	mentions_list.append(tweet_info)
+
+	print("------------------------------------------------")
+	print("AFTER APPENDING: ")
+	print('\n'.join(map(str, mentions_list))) 
+	print("------------------------------------------------")
+
+	print("size is: " + str(len(mentions_list)))
 
 	# load/write recent mentions into 'recent_mentions.pkl'
 	with open('recent_mentions.pkl', 'wb') as mentions_pickle_file:
-		pickle.dump(recent_mentions, mentions_pickle_file)
+		pickle.dump(mentions_list, mentions_pickle_file)
 
 	print('recorded tweet info')
+	return mentions_list
 
 
-
-def is_new_tweet(tweet):
+def is_new_tweet(tweet, mentions_list):
 	if not tweet:
 		print('Error: tweet is empty')
-		return;
+		return False;
 
 	tweet_info = f"Tweet sent by @{tweet.author.name} on {tweet.created_at}: {tweet.text}"
-	if tweet_info in recent_mentions:
+	if tweet_info in mentions_list:
 		print('Not a new mention')
 		return False
 	else:
@@ -48,16 +53,19 @@ def is_new_tweet(tweet):
 		return True
 	
 # resize list to desired size
-def resize_list(size):
-	if len(recent_mentions) < size:
-		print('no need to resize')
-		return recent_mentions
+def resize_list(size, mentions_list):
+	if len(mentions_list) <= size:
+		print('no need to resize..')
+		return mentions_list
 
-	while len(recent_mentions) >= size:
-		recent_mentions.pop()
+	print("Before resize SIZE: " + str(len(mentions_list)))
+	while len(mentions_list) > size:
+		mentions_list.pop(0)
+		print('reduced size of list, new size is: ' + str(len(mentions_list)))
+		#print(str(mentions_list))
 	
 	print('done resizing')
-	#return mentions_list
+	return mentions_list
 	
 
 
@@ -67,8 +75,8 @@ twitter_API_secret = os.environ.get('TWITTER_API_SECRET')
 twitter_access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
 twitter_access_secret = os.environ.get('TWITTER_TOKEN_SECRET')
 
-sleep_time = 15 
-num_mention = 5 # number of mentions this bot will worry about
+sleep_time = 45
+num_mention = 6 # number of mentions this bot will worry about
 
 auth = tweepy.OAuthHandler(twitter_API_key, twitter_API_secret)
 auth.set_access_token(twitter_access_token, twitter_access_secret)
@@ -79,8 +87,8 @@ user = api.me()
 
 recent_mentions = []
 # load/write recent mentions into 'recent_mentions.pkl'
-#with open('recent_mentions.pkl', 'wb') as mentions_pickle_file:
-#	pickle.dump(recent_mentions, mentions_pickle_file)
+with open('recent_mentions.pkl', 'wb') as mentions_pickle_file:
+	pickle.dump(recent_mentions, mentions_pickle_file)
 
 print('Starting bot...')
 
@@ -90,13 +98,9 @@ with open('recent_mentions.pkl', 'rb') as mentions_pickle_file:
 	recent_mentions = pickle.load(mentions_pickle_file)
 	print(f"recent_mentions.plk contains: {recent_mentions}")
 
-#tweets = api.mentions_timeline()
-
-
-
 while True:
 	try:
-		tweets = api.mentions_timeline(count = num_mention)	# get tweets that mention the bot
+		tweets = api.mentions_timeline(count = 10)	# get tweets that mention the bot
 
 		# check if there are no mentions
 		if not tweets:
@@ -105,62 +109,38 @@ while True:
 			continue;
 
 		print('mention/s found!')
-
-		for tweet in tweets:
-			if is_new_tweet(tweet):
+		# range(start, stop, step)
+		# the following line will make start for loop at last index, and decrement i
+		# why? in order to make it so the oldest entries are in the front of the "queue" --> 'recent_mentions' list
+		for i in range(len(tweets) - 1, -1, -1):
+			if is_new_tweet(tweets[i], recent_mentions):
 				# get tweet text
-				tweet_text = tweet.text
+				tweet_text = tweets[i].text
 
 				# make haiku
 				make_haiku(tweet_text)
 
 				# record the person who mentioned to prevent making haiku of the same tweet
-				record_tweet_info(tweet)
+				record_tweet_info(tweets[i], recent_mentions)
 
-				time.sleep(1)
+				print("------------------------------------------------")
+				print("Recent mentions updated: ")
+				print('\n'.join(map(str, recent_mentions))) 
+				print("------------------------------------------------")
 
+				time.sleep(2)
+
+		recent_mentions = resize_list(15, recent_mentions)
+
+		print("------------------------------------------------")
+		print("Recent mentions RESIZED: ")
+		print('\n'.join(map(str, recent_mentions))) 
+		print("------------------------------------------------")
+
+		print(" ++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+		print("+++++++++++++++++++  SLEEPING  +++++++++++++++++++++++++")
+		print(" ++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 		time.sleep(sleep_time)
 
 	except tweepy.TweepError as e:
 		print("error recieved:" + e.reason)		# printing out the errors
-	
-		
-
-
-
-
-
-
-
-
-
-
-#for tweet in tweets:
-#	tweet_text = tweet.text
-
-
-# Cursor gather all the things
-#for follower in tweepy.cursor(api.followers).items():
-#	print(follower.name)
-#	if follower.name == "crazy how cool":
-#		follower.follow()
-
-#search = "Santa"
-
-#numberOfTweets = 1
-
-#for tweet in tweepy.Cursor(api.search, search).items(numberOfTweets):
-#	try:
-#		print("Tweet Liked: " + tweet.text)
-#		tweet.favorite()
-#		# id = tweet.user.id_str
-		
-#		time.sleep(5)
-
-#	except tweepy.TweepError as e:
-#		print("error recieved:" + e.reason)		# printing out the errors
-
-#	except StopIteration:	# reaches completion
-#		break
-
-#print(user.screen_name)
