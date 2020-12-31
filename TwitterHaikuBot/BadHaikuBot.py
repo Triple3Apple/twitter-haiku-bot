@@ -184,16 +184,13 @@ def main():
 
                     #test_tweet_text = curr_tweet.retweeted_status.text if curr_tweet.text.startswith("RT @") else curr_tweet.text
 
-                    # make haiku
-                    
-
                     # record the person who mentioned to prevent
                     # making haiku of the same tweet
                     hb.record_tweet_info(curr_tweet)
 
                     hb.print_recent_mentions('Recent mentions updated: ')
 
-                    time.sleep(2)
+                    time.sleep(1)
 
             hb.recent_mentions = hb.resize_list(hb.num_entries)
 
