@@ -180,7 +180,10 @@ def main():
                         quoted_tweet_text = str(curr_tweet.quoted_status.text)
                         # make haiku
                         make_haiku(quoted_tweet_text)
-
+                        
+                        # REMOVE: TESTING BELOW----------------------------------------------------------------------------------------
+                        make_haiku('Something how Dr. Fauci is revered by the LameStream Media as such a great professional, having done, they say, such an incredible job, yet he works for me and the Trump Administration, and I am in no way given any credit for my work. Gee, could this just be more Fake News?')
+                        make_haiku('The raid is excellent, the loot is fun and desirable, the Spoils system encourages replayability for more loot, and it’s 2 mannable and half can be soloed for us hardcore folk. The Lost Sector solo exotic farm is one of the best things to ever touch Destiny. More like this.')
 
                     #test_tweet_text = curr_tweet.retweeted_status.text if curr_tweet.text.startswith("RT @") else curr_tweet.text
 

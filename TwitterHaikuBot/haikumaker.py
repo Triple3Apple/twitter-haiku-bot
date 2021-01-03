@@ -1,15 +1,24 @@
+# badhaikubot.py
+# A twitter bot that turns a tweet into a really bad haiku
+# Made by: https://github.com/Triple3Apple
+
 import syllapy
 import random
 
 
-word = 'because'
-print('syllable count for ' + word + ' is: ' + str(syllapy.count(word)))
+# word = 'because'
+# print('syllable count for ' + word + ' is: ' + str(syllapy.count(word)))
+
+special_words = ['the', 'an', 'or', 'and', 'is',
+                 'i', 'that', 'he', 'she', 'they',
+                 'are', 'for', 'in', 'my', 'all',
+                 'our', 'to', 'as', 'of']
 
 
 def make_haiku(text: str):
 
     haiku = ''
-    
+
     if not text:
         print('Error: text of tweet is empty :(')
         return
@@ -41,15 +50,19 @@ def make_haiku(text: str):
     
     print('indexes_with_words:' + str(indexes_with_words))
     
-    form_haiku_line(syllable_words.copy(), indexes_with_words, 5)
+    line1 = form_haiku_line(syllable_words.copy(), indexes_with_words, 5)
+    line2 = form_haiku_line(syllable_words.copy(), indexes_with_words, 7)
+    line3 = form_haiku_line(syllable_words.copy(), indexes_with_words, 5)
     
+    haiku = line1 + '\n' + line2 + '\n' + line3
+    
+    print('\n\n--------\n' + haiku + '\n\n--------\n')
     # for syllable_array in syllable_words:
     #     if len(syllable_array) > 0:
     #         indexes_with_words
     
     # turn words into haiku
     
-
     return haiku
 
 
@@ -67,7 +80,7 @@ def filter_out_words(unfiltered_words: list):
 
     words_to_remove = []
     words_to_edit = []
-    chars_to_remove = [';', ':', '!', '*', '#', ',', '?']
+    chars_to_remove = [';', ':', '!', '*', '#', ',', '?', '"', '&']
     other_bad_chars = ['/']
 
     for word in unfiltered_words:
@@ -139,6 +152,8 @@ def get_syllable_words(list_of_words: list):
 
 def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllables: int):
 
+    #print(str(special_words))
+
     haiku_line = ''
     space = ' '
 
@@ -157,7 +172,7 @@ def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllabl
 
     print('total number of words: ' + str(total_words_num))
 
-    # add distibution values for each 
+    # add distibution values for each syllable
     for index in range(len(syllable_words)):
 
         word_count = 0
@@ -178,10 +193,19 @@ def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllabl
     # number of syllables in the line
     current_syllable_count = 0
     error_loop_count = 0
+    last_word_chosen = ''
     
     while current_syllable_count < num_of_syllables:
     #    syllable_choice = random.randint(0, len(syllable_indexes))
-        syllable_choice_num = random.choices(syllable_indexes, cum_weights=distribution_array, k=1)
+    
+        # choose a syllable based on weights
+        print('syllable indexes: ' + str(syllable_indexes))
+        # syllable_choices = random.choices(syllable_indexes, cum_weights=distribution_array, k=1)
+        syllable_choices = random.choices(syllable_indexes, weights=distribution_array, k=1)
+        print('result after random.choices: ' + str(syllable_choices))
+        syllable_choice_num = syllable_choices[0]
+        # to make it represent syllable num not index
+        syllable_choice_num += 1
         
         # checking if current syllable choice will exceed amount needed
         if current_syllable_count + syllable_choice_num > num_of_syllables:
@@ -189,15 +213,100 @@ def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllabl
             error_loop_count += 1
             
             if error_loop_count > 50:
-                # break out of loop
+                # break out of loop, no compatible syllable value was found (NOT GOOD)
                 print("ERROR: could not choose a correct syllable value in form_haiku_line()")
                 break
             
+            # continue to try to find a good syllable value
+            # TODO: find a better non-random way to get a correct syllable count!!!!!!
+            continue
+
+        error_loop_count = 0
+
+        print('******syllable num chosen: ' + str(syllable_choice_num) + '******')
+
+        # choose a random word from the list inside syllable_words list
+        words = syllable_words[syllable_choice_num - 1]
+        print('syllable_words' + str(syllable_words[syllable_choice_num - 1]))
+        print(str(words))
+        curr_word = random.choice(words)
+        # curr_word = random.choice(syllable_words[syllable_choice_num - 1])
+        print('word chosen: ' + curr_word)
+        
+        non_rand_index = 0
+        is_error = False
+        
+        print('checking word...')
+        
+        # meaning that there is only one word that has that many syllables
+        while last_word_chosen.lower() == curr_word.lower():
+            
+            # if there is only one word that has this many syllables,
+            # then retry and pick a diff syllable num
+            if len(syllable_words[syllable_choice_num - 1]) == 1:
+                print('There is only 1 word that matches this syllable count: ' + str(syllable_words[syllable_choice_num - 1]))
+                print('retrying...')
+                is_error = True
+                break   # break out of *this* while loop
+
+            # if non_rand_index is greater than the allowed indexes, break
+            if non_rand_index >= len(syllable_words[syllable_choice_num - 1]):
+                print('ERROR, could not find a dif word (bug most likely!) in form_haiku_line()')
+                is_error = True
+                break
+            
+            print('word is same as the last one, choosing a dif word with ' + str(syllable_choice_num) + ' syllable')
+            
+            # choose a different word
+            word_arr = syllable_words[syllable_choice_num - 1]
+            curr_word = word_arr[non_rand_index]
+            print('new word chosen: ' + curr_word)
+            print('checking word...')
+            non_rand_index += 1
+
+        if is_error is True:
             continue
         
-        error_loop_count = 0
+        loopNum = 0
         
-        # TODO: choose a word and then append it to the haiku_line...
-    
+        # check if this is the last word and if it is a special word
+        curr_word_temp = curr_word
+        if (curr_word_temp.lower() in special_words) and ((syllable_choice_num + current_syllable_count) == num_of_syllables):
+            print('word is special word: ' + curr_word_temp + '  retrying...')
+            loopNum += 1
+            if loopNum > 50:
+                print('ERROR, couldnt find word that was not special num-------------------------------')
+                break
+            continue
 
+        print('new word is correct :)  : ' + curr_word)
+        
+        # make first letter of the word capital
+        if current_syllable_count == 0:
+            curr_word = curr_word.capitalize()
+        else:
+            curr_word = curr_word.lower()
+            
+
+        # update current_syllable_count
+        current_syllable_count += syllable_choice_num
+        print('curr syllable count is updated: ' + str(current_syllable_count))
+        
+        # updating last_word_chosen
+        last_word_chosen = curr_word
+
+        # adding word to the haiku_line
+        if current_syllable_count == num_of_syllables:
+            # end of the haiku line
+            haiku_line += curr_word
+        else:
+            haiku_line += (curr_word + space)
+        
+        print('haiku line:: ' + haiku_line)
+
+    debug_final_line = f"Final Haiku Line({str(num_of_syllables)} syllables): {haiku_line}"
+    print('-----------------------------------')
+    print(debug_final_line)
+    print('-----------------------------------')
+    
     return haiku_line
