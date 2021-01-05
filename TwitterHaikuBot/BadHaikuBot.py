@@ -1,3 +1,5 @@
+# coding: utf-8
+
 # badhaikubot.py
 # A twitter bot that turns a tweet into a really bad haiku
 # Made by: https://github.com/Triple3Apple
@@ -7,12 +9,34 @@ import time
 import os
 import pickle
 import sys
+import random
+from datetime import date
+from datetime import datetime
 from haikumaker import make_haiku
 # import syllapy
 
+haiku_text_decor = ['    *☆･ﾟ*.｡', '    *★ ﾟ｡ * ｡',
+                    '    ☆∴｡　*', '    ･ﾟ*｡★･',
+                    '   * ☆ ｡･ﾟ*.｡', '   * ﾟ*.｡☆ ｡･',
+                    '    ･ﾟ*☆｡✰', '    ﾟ✧ *★ ﾟ･']
+
+haiku_text_intros = ['Here\'s your haiku!',
+                     'Haiku incoming!',
+                     'Bad Haiku Incoming!',
+                     'Enjoy! 🌸',
+                     'Enjoy!',
+                     'Haiku just for you!',
+                     'Tweet haiku:',
+                     'I\'m Sorry',
+                     'Beep Boop']
+
+special_line = '🌟✨🌟✨🌟'
+
 
 class HaikuBot:
-    sleep_time = 45
+    sleep_time = 120
+    
+    #bot_start_time = 
 
     def __init__(self, twit_api_key, twit_api_secret, twit_access_token,
                  twit_secret_token, num_mentions: int, num_entries: int):
@@ -30,8 +54,6 @@ class HaikuBot:
 
     # authenticates and returns api object
     def authenticate_bot(self):
-        # auth = tweepy.OAuthHandler(self.twitter_API_key, self.twitter_API_secret)
-        # auth.set_access_token(self.twitter_access_token, self.twitter_access_secret)
         print(self.twitter_API_key)
         auth = tweepy.OAuthHandler(
             consumer_key=self.twitter_API_key,
@@ -51,12 +73,6 @@ class HaikuBot:
             sys.exit("Error during authentication!")
 
         return api
-
-    # def make_haiku(self, text: str):
-    #     if not text:
-    #         print('Error: text of tweet is empty :(')
-    #         return
-    #     print('RECIEVED TEXT: ' + text)
 
     # prints out the recent_mentions list (for debugging purposes)
     def print_recent_mentions(self, text: str = ''):
@@ -124,14 +140,37 @@ class HaikuBot:
         print('done resizing')
         return self.recent_mentions
 
+    # sends a tweet
+    def send_tweet(self, api, tweet_text: str, tweet_id, tweet):
+        try:
+            #tweet_datetime = datetime.strftime(datetime.strptime(tweet.created_at,'%a %b %d %H:%M:%S +0000 %Y'), '%Y-%m-%d %H:%M:%S')
+            tweet_datetime_string = datetime.strftime(tweet.created_at,'%a %b %d %H:%M:%S +0000 %Y')
+            print('Tweet (' + tweet.text + ') created on:' + str(tweet_datetime_string))
+            
+            # convert tweet time string to datetime
+            tweet_datetime = datetime.strftime(datetime.strptime(tweet_datetime_string,'%a %b %d %H:%M:%S +0000 %Y'), '%Y-%m-%d %H:%M:%S')
+            # TODO: compare datetimes (when bot was started to when the tweet was recived, so it only replies to tweets it recieved when it was awake)
+            
+            print('Tweet datetime OBJECT: ' + str(tweet_datetime))
+            
+            # api.update_status(
+            #     status=str(tweet_text),
+            #     in_reply_to_status_id=tweet_id)
+            
+            print('tweet sent')
+        except tweepy.TweepError as e:
+            print("++++++++++++++error recieved for " + str(date.today()) + ":" + e.reason + "++++++++++")		# printing out the errors
+            print('ERROR WHEN TWEETING: ' + tweet_text + " : from: " + str(tweet_id))
+
 
 def main():
+
     # create HaikuBot object
     hb = HaikuBot('TWITTER_API_KEY', 'TWITTER_API_SECRET',
                   'TWITTER_ACCESS_TOKEN', 'TWITTER_TOKEN_SECRET', 6, 15)
     api = hb.authenticate_bot()
 
-    # load/write recent mentions into 'recent_mentions.pkl'
+    # load/write recent mentions into 'recent_mentions.pkl' (creates the file)
     with open('recent_mentions.pkl', 'wb') as mentions_pickle_file:
         pickle.dump(hb.recent_mentions, mentions_pickle_file)
 
@@ -164,28 +203,82 @@ def main():
                 if hb.is_new_tweet(tweets[i]):
 
                     curr_tweet = tweets[i]
-                    
-                    # get tweet text
-                    #tweet_text = curr_tweet.text
-                    
+
                     # continue to next tweet if not quoted tweet
                     if curr_tweet.is_quote_status is False:
-                        # TODO: reply to tweet sstating that the format is incorrect or something..
                         print('tweet is NOT a QUOTE RETWEET!   :C')
-                    
+
+                        # TODO: reply to tweet stating that the format is incorrect or something..
+
+                        if 'source' in curr_tweet.text.lower():
+
+                            source_text = '@' + curr_tweet.user.screen_name + ' Link to source code (Github): https://github.com/Triple3Apple/twitter-haiku-bot'
+
+                            hb.send_tweet(api=api, tweet_text=source_text, tweet_id=curr_tweet.id, tweet=curr_tweet)
+
+                            print('source code wanted')
+
+                        else:
+                            if 'help' in curr_tweet.text.lower():
+
+                                help_info = '@' + curr_tweet.user.screen_name + ' To use me and create a wonderfully bad haiku out of someone\'s tweet, create a quote tweet (click retweet and then "Quote Retweet") and @ me as a comment'
+
+                                hb.send_tweet(api=api, tweet_text=help_info, tweet_id=curr_tweet.id, tweet=curr_tweet)
+
+                                print('help requested')
+                            else:
+                                info = '@' + curr_tweet.user.screen_name + ' Hello, I am a Haiku bot created by @Triple3Apple, ' \
+                                     'I turn people\'s tweets into a wonderfully bad haiku! To use me and create a wonderfully ' \
+                                     'bad haiku out of someone\'s tweet, create a quote tweet (click retweet and then "Quote Retweet") and @ me as a comment.'
+
+                                hb.send_tweet(api=api, tweet_text=info, tweet_id=curr_tweet.id, tweet=curr_tweet)
+
                     else:
                         print('tweet is QUOTE RETWEET!')
                         print('contents: ' + str(curr_tweet.quoted_status.text) + '-----------------------')
                         # get quoted tweet text
                         quoted_tweet_text = str(curr_tweet.quoted_status.text)
                         # make haiku
-                        make_haiku(quoted_tweet_text)
-                        
-                        # REMOVE: TESTING BELOW----------------------------------------------------------------------------------------
-                        make_haiku('Something how Dr. Fauci is revered by the LameStream Media as such a great professional, having done, they say, such an incredible job, yet he works for me and the Trump Administration, and I am in no way given any credit for my work. Gee, could this just be more Fake News?')
-                        make_haiku('The raid is excellent, the loot is fun and desirable, the Spoils system encourages replayability for more loot, and it’s 2 mannable and half can be soloed for us hardcore folk. The Lost Sector solo exotic farm is one of the best things to ever touch Destiny. More like this.')
+                        haiku = make_haiku(quoted_tweet_text)
 
-                    #test_tweet_text = curr_tweet.retweeted_status.text if curr_tweet.text.startswith("RT @") else curr_tweet.text
+                        if haiku == 'NEWR':
+                            print('ERROR RECEVED: Not enough words recieved, tweet must have 5 non duplicate words')
+                            # reply to tweet informing user that more words are needed
+                            err_text = '@' + curr_tweet.user.screen_name + ' \n🤖 Says: Sorry, the quoted tweet must have more than 5 words'
+
+                            hb.send_tweet(api=api, tweet_text=err_text, tweet_id=curr_tweet.id, tweet=curr_tweet)
+
+                            # api.update_status(
+                            #     status=str(err_text),
+                            #     in_reply_to_status_id=curr_tweet.id)
+
+                        elif haiku == 'ECH':
+                            print('ERROR RECIEVED: Something has gone wrong and my creator is bad at coding')
+                            # reply to tweet informing user that bot has failed and creator is bad
+                            err_text = '@' + curr_tweet.user.screen_name + ' \n🤖 Says: Sorry, something has gone wrong while making your Haiku. \nGo complain to my creator, @Triple3Apple'
+
+                            hb.send_tweet(api=api, tweet_text=err_text, tweet_id=curr_tweet.id, tweet=curr_tweet)
+
+                            # api.update_status(
+                            #     status=str(err_text),
+                            #     in_reply_to_status_id=curr_tweet.id)
+
+                        else:
+                            greeting = ''
+                            ending = ''
+
+                            if random.randint(0, 20) == 10:
+                                # 5% chance to get "special" text
+                                greeting = f'@{curr_tweet.user.screen_name} {random.choice(haiku_text_intros)} \n\n{special_line}\n'
+                                ending = f'\n{special_line}'
+                            else:
+                                greeting = f'@{curr_tweet.user.screen_name} {random.choice(haiku_text_intros)} \n\n{random.choice(haiku_text_decor)}\n'
+                                ending = f'\n{random.choice(haiku_text_decor)}'
+
+                            haiku_tweet = greeting + haiku + ending
+
+                            # post tweet
+                            hb.send_tweet(api, tweet_text=haiku_tweet, tweet_id=curr_tweet.id, tweet=curr_tweet)
 
                     # record the person who mentioned to prevent
                     # making haiku of the same tweet
@@ -193,7 +286,7 @@ def main():
 
                     hb.print_recent_mentions('Recent mentions updated: ')
 
-                    time.sleep(1)
+                    time.sleep(2)
 
             hb.recent_mentions = hb.resize_list(hb.num_entries)
 
@@ -205,8 +298,8 @@ def main():
             time.sleep(hb.sleep_time)
 
         except tweepy.TweepError as e:
-            print("error recieved:" + e.reason)		# printing out the errors
-            time.sleep(10)
+            print("++++++++++++++error recieved for " + str(date.today()) + ":" + e.reason + "++++++++++")		# printing out the errors
+            time.sleep(30)
 
         except StopIteration:
             break

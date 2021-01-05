@@ -14,6 +14,7 @@ special_words = ['the', 'an', 'or', 'and', 'is',
                  'are', 'for', 'in', 'my', 'all',
                  'our', 'to', 'as', 'of']
 
+line = '☆ﾟ･｡°*. ﾟ'
 
 def make_haiku(text: str):
 
@@ -39,30 +40,37 @@ def make_haiku(text: str):
     print('filtered word list:')
     print(words_list[0:])
 
+    # NOTE: less than 5 words in tweet (BAD)
+    if len(words_list) < 5:
+        # Not enough words recieved
+        return 'NEWR'
+
     syllable_words = get_syllable_words(words_list.copy())
-    
+
     # get indexes that have syllables
     indexes_with_words = []
-    
+
     for index in range(len(syllable_words)):
         if len(syllable_words[index]) > 0:
             indexes_with_words.append(index)
-    
+
     print('indexes_with_words:' + str(indexes_with_words))
-    
+
     line1 = form_haiku_line(syllable_words.copy(), indexes_with_words, 5)
     line2 = form_haiku_line(syllable_words.copy(), indexes_with_words, 7)
     line3 = form_haiku_line(syllable_words.copy(), indexes_with_words, 5)
-    
-    haiku = line1 + '\n' + line2 + '\n' + line3
-    
+
+    if line1 == 'ERROR' or line2 == 'ERROR' or line3 == 'ERROR':
+        # Error Creating Haiku
+        return 'ECH'
+
+    haiku = line1 + ',\n' + line2 + ',\n' + line3 + '.'
+
     print('\n\n--------\n' + haiku + '\n\n--------\n')
     # for syllable_array in syllable_words:
     #     if len(syllable_array) > 0:
     #         indexes_with_words
-    
-    # turn words into haiku
-    
+
     return haiku
 
 
@@ -84,6 +92,7 @@ def filter_out_words(unfiltered_words: list):
     other_bad_chars = ['/']
 
     for word in unfiltered_words:
+
         # if any(char.isdigit() for char in word):
         print('analyzing: ' + word)
 
@@ -115,7 +124,14 @@ def filter_out_words(unfiltered_words: list):
         else:
             unfiltered_words.remove(word_to_edit)
 
-    # remove duplicate words maybe??
+    # making strings in list all lowercase
+    unfiltered_words = [word.lower() for word in unfiltered_words]
+
+    print('before removing duplicates: ' + str(unfiltered_words))
+    # testing
+    unfiltered_words = [i for n, i in enumerate(unfiltered_words) if i not in unfiltered_words[:n]]
+
+    print('AFTER removing duplicates: ' + str(unfiltered_words))
 
 
 # will organize words in to corresponding arrays
@@ -215,6 +231,7 @@ def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllabl
             if error_loop_count > 50:
                 # break out of loop, no compatible syllable value was found (NOT GOOD)
                 print("ERROR: could not choose a correct syllable value in form_haiku_line()")
+                haiku_line = 'ERROR'
                 break
             
             # continue to try to find a good syllable value
@@ -279,6 +296,8 @@ def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllabl
                 break
             continue
 
+        if curr_word == 'i':
+            curr_word = curr_word.capitalize()
         print('new word is correct :)  : ' + curr_word)
         
         # make first letter of the word capital
