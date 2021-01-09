@@ -34,6 +34,8 @@ special_line = '🌟✨🌟✨🌟'
 
 
 class HaikuBot:
+    
+    # bots sleep time after responding to all mentions, before checking again
     sleep_time = 120
 
     def __init__(self, twit_api_key, twit_api_secret, twit_access_token,
