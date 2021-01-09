@@ -32,13 +32,13 @@ def make_haiku(text: str):
 
     words_list = seperate_to_words(text)
 
-    print('before filtering: ')
-    print(words_list[0:])
+    #print('before filtering: ')
+    #print(words_list[0:])
 
     filter_out_words(words_list)
 
-    print('filtered word list:')
-    print(words_list[0:])
+    #print('filtered word list:')
+    #print(words_list[0:])
 
     # NOTE: less than 5 words in tweet (BAD)
     if len(words_list) < 5:
@@ -54,7 +54,7 @@ def make_haiku(text: str):
         if len(syllable_words[index]) > 0:
             indexes_with_words.append(index)
 
-    print('indexes_with_words:' + str(indexes_with_words))
+    #print('indexes_with_words:' + str(indexes_with_words))
 
     line1 = form_haiku_line(syllable_words.copy(), indexes_with_words, 5)
     line2 = form_haiku_line(syllable_words.copy(), indexes_with_words, 7)
@@ -78,8 +78,8 @@ def seperate_to_words(text_with_spaces: str):
 
     words_list = text_with_spaces.split()
 
-    print('seperating str to words')
-    print(words_list[0:])
+    #print('seperating str to words')
+    #print(words_list[0:])
 
     return words_list
 
@@ -98,18 +98,18 @@ def filter_out_words(unfiltered_words: list):
 
         # removing words that contain / symbol
         if any(char in other_bad_chars for char in word):
-            print('found / symbol in: ' + word)
+            #print('found / symbol in: ' + word)
             unfiltered_words.remove(word)
             continue
 
         # removing any words that contain numbers
         if any(map(str.isdigit, word)):
-            print('found number in: ' + word)
+            #print('found number in: ' + word)
             words_to_remove.append(word)
             continue
 
         if any(not char.isalnum() for char in word):
-            print('found symbol in: ' + word)
+            #print('found symbol in: ' + word)
             words_to_edit.append(word)
             continue
 
@@ -127,11 +127,11 @@ def filter_out_words(unfiltered_words: list):
     # making strings in list all lowercase
     unfiltered_words = [word.lower() for word in unfiltered_words]
 
-    print('before removing duplicates: ' + str(unfiltered_words))
+    #print('before removing duplicates: ' + str(unfiltered_words))
     # testing
     unfiltered_words = [i for n, i in enumerate(unfiltered_words) if i not in unfiltered_words[:n]]
 
-    print('AFTER removing duplicates: ' + str(unfiltered_words))
+    #print('AFTER removing duplicates: ' + str(unfiltered_words))
 
 
 # will organize words in to corresponding arrays
@@ -151,7 +151,8 @@ def get_syllable_words(list_of_words: list):
         if syllable_num < 1:
             print('ERROR: recieved a syllable count less than 1, ' + str(syllable_num))
             continue
-        print('analyzed word: ' + word + ', syllables: ' + str(syllable_num))
+        #print('analyzed word: ' + word + ', syllables: ' + str(syllable_num))
+
         # store word in corresponing index which contains an array
         syllable_list[syllable_num - 1].append(word)
 
@@ -186,7 +187,7 @@ def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllabl
         for word in array:
             total_words_num += 1
 
-    print('total number of words: ' + str(total_words_num))
+    #print('total number of words: ' + str(total_words_num))
 
     # add distibution values for each syllable
     for index in range(len(syllable_words)):
@@ -215,10 +216,10 @@ def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllabl
     #    syllable_choice = random.randint(0, len(syllable_indexes))
     
         # choose a syllable based on weights
-        print('syllable indexes: ' + str(syllable_indexes))
+        #print('syllable indexes: ' + str(syllable_indexes))
         # syllable_choices = random.choices(syllable_indexes, cum_weights=distribution_array, k=1)
         syllable_choices = random.choices(syllable_indexes, weights=distribution_array, k=1)
-        print('result after random.choices: ' + str(syllable_choices))
+        #print('result after random.choices: ' + str(syllable_choices))
         syllable_choice_num = syllable_choices[0]
         # to make it represent syllable num not index
         syllable_choice_num += 1
@@ -240,12 +241,12 @@ def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllabl
 
         error_loop_count = 0
 
-        print('******syllable num chosen: ' + str(syllable_choice_num) + '******')
+        print('Syllable num chosen: ' + str(syllable_choice_num))
 
         # choose a random word from the list inside syllable_words list
         words = syllable_words[syllable_choice_num - 1]
-        print('syllable_words' + str(syllable_words[syllable_choice_num - 1]))
-        print(str(words))
+        #print('syllable_words' + str(syllable_words[syllable_choice_num - 1]))
+        #print(str(words))
         curr_word = random.choice(words)
         # curr_word = random.choice(syllable_words[syllable_choice_num - 1])
         print('word chosen: ' + curr_word)

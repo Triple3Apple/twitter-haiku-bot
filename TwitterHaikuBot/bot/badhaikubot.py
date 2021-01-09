@@ -218,6 +218,7 @@ def main():
                 if is_ignoring is True:
                     is_ignoring = False
 
+                print('sleeping for: ' + hb.sleep_time + 'ms')
                 time.sleep(hb.sleep_time)
                 continue
 
@@ -324,6 +325,7 @@ def main():
             if is_ignoring is True:
                 is_ignoring = False
 
+            print('sleeping for: ' + hb.sleep_time + 'ms')
             time.sleep(hb.sleep_time)
 
         except tweepy.TweepError as e:
