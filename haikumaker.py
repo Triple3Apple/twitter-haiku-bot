@@ -1,5 +1,5 @@
 # badhaikubot.py
-# A twitter bot that turns a tweet into a really bad haiku
+# A Twitter bot that turns a tweet into a really bad haiku
 # Made by: https://github.com/Triple3Apple
 
 import syllapy
