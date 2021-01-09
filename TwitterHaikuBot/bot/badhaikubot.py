@@ -329,7 +329,7 @@ def main():
             time.sleep(hb.sleep_time)
 
         except tweepy.TweepError as e:
-            print("++++++++++++++error recieved for " + str(date.today()) + ":" + e.reason + "++++++++++")		# printing out the errors
+            print("++++++++++++++ Error recieved for " + str(date.today()) + ":" + e.reason + " ++++++++++")		# printing out the errors
             time.sleep(30)
 
         except StopIteration:
