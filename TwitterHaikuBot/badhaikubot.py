@@ -62,6 +62,7 @@ class HaikuBot:
             key=self.twitter_access_token,
             secret=self.twitter_access_secret)
 
+        # set limit
         api = tweepy.API(
             auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
