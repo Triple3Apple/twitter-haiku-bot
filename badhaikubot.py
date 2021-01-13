@@ -105,10 +105,6 @@ class HaikuBot:
         # load/write recent mentions into 'recent_mentions.pkl'
         self.store_recent_mentions()
 
-        # original
-        # with open('recent_mentions.pkl', 'wb') as mentions_pickle_file:
-        #     pickle.dump(self.recent_mentions, mentions_pickle_file)
-
         print('recorded tweet info')
         return self.recent_mentions
 
@@ -177,9 +173,9 @@ def main():
 
     api = hb.authenticate_bot()
 
-    # load/write recent mentions into 'recent_mentions.pkl' (creates the file)
-    # with open('recent_mentions.pkl', 'wb') as mentions_pickle_file:
-    #     pickle.dump(hb.recent_mentions, mentions_pickle_file)
+    # Obtaining the bots screen name for reply validation later on
+    bot_account = api.me()
+    bot_screen_name = bot_account.screen_name
 
     print('Starting bot...')
 
@@ -192,16 +188,6 @@ def main():
         # so we have to create it
         print('PICKLE FILE NOT FOUND, CREATING NEW PICKLE FILE-----------')
         hb.store_recent_mentions()
-
-        # original below
-        # print('PICKLE FILE NOT FOUND, CREATING NEW PICKLE FILE-----------')
-        # with open('recent_mentions.pkl', 'wb') as mentions_pickle_file:
-        #     pickle.dump(hb.recent_mentions, mentions_pickle_file)
-
-    # original below  
-    # with open('recent_mentions.pkl', 'rb') as mentions_pickle_file:
-    #     hb.recent_mentions = pickle.load(mentions_pickle_file)
-    #     print(f"recent_mentions.plk contains: {hb.recent_mentions}")
 
     # this bool will make it so the the tweets gathered in the first wave of
     # gathering tweets are recorded but not responded to by the bot
@@ -241,9 +227,12 @@ def main():
                         if curr_tweet.is_quote_status is False:
                             print('tweet is NOT a QUOTE RETWEET!   :C')
 
-                            # TODO: reply to tweet stating that the format is incorrect or something..
+                            # Do not respond if user is replying to a tweet that the bot generated
+                            tweet_author_name = curr_tweet.in_reply_to_screen_name
+                            if tweet_author_name is bot_screen_name:
+                                print('--- Not replying, user is replying to Bot ---')
 
-                            if 'source' in curr_tweet.text.lower():
+                            elif 'source' in curr_tweet.text.lower():
 
                                 source_text = '@' + curr_tweet.user.screen_name + ' Link to source code (Github): https://github.com/Triple3Apple/twitter-haiku-bot'
 
@@ -304,8 +293,6 @@ def main():
 
                                 # post tweet
                                 hb.send_tweet(api=api, tweet_text=haiku_tweet, tweet_id=curr_tweet.id, tweet=curr_tweet)
-
-
 
                     # record the person who mentioned to prevent
                     # making haiku of the same tweet

@@ -67,9 +67,6 @@ def make_haiku(text: str):
     haiku = line1 + ',\n' + line2 + ',\n' + line3 + '.'
 
     print('\n\n--------\n' + haiku + '\n\n--------\n')
-    # for syllable_array in syllable_words:
-    #     if len(syllable_array) > 0:
-    #         indexes_with_words
 
     return haiku
 
@@ -77,9 +74,6 @@ def make_haiku(text: str):
 def seperate_to_words(text_with_spaces: str):
 
     words_list = text_with_spaces.split()
-
-    #print('seperating str to words')
-    #print(words_list[0:])
 
     return words_list
 
@@ -127,11 +121,7 @@ def filter_out_words(unfiltered_words: list):
     # making strings in list all lowercase
     unfiltered_words = [word.lower() for word in unfiltered_words]
 
-    #print('before removing duplicates: ' + str(unfiltered_words))
-    # testing
     unfiltered_words = [i for n, i in enumerate(unfiltered_words) if i not in unfiltered_words[:n]]
-
-    #print('AFTER removing duplicates: ' + str(unfiltered_words))
 
 
 # will organize words in to corresponding arrays
@@ -168,8 +158,6 @@ def get_syllable_words(list_of_words: list):
 
 
 def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllables: int):
-
-    #print(str(special_words))
 
     haiku_line = ''
     space = ' '
@@ -213,11 +201,7 @@ def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllabl
     last_word_chosen = ''
     
     while current_syllable_count < num_of_syllables:
-    #    syllable_choice = random.randint(0, len(syllable_indexes))
-    
-        # choose a syllable based on weights
-        #print('syllable indexes: ' + str(syllable_indexes))
-        # syllable_choices = random.choices(syllable_indexes, cum_weights=distribution_array, k=1)
+
         syllable_choices = random.choices(syllable_indexes, weights=distribution_array, k=1)
         #print('result after random.choices: ' + str(syllable_choices))
         syllable_choice_num = syllable_choices[0]
@@ -245,10 +229,9 @@ def form_haiku_line(syllable_words: list, syllable_indexes: list, num_of_syllabl
 
         # choose a random word from the list inside syllable_words list
         words = syllable_words[syllable_choice_num - 1]
-        #print('syllable_words' + str(syllable_words[syllable_choice_num - 1]))
-        #print(str(words))
+
         curr_word = random.choice(words)
-        # curr_word = random.choice(syllable_words[syllable_choice_num - 1])
+
         print('word chosen: ' + curr_word)
         
         non_rand_index = 0
