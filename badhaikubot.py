@@ -249,11 +249,20 @@ def main():
 
                                     print('help requested')
                                 else:
-                                    info = '@' + curr_tweet.user.screen_name + ' Hello, I am a Haiku bot created by @Triple3Apple, ' \
+                                    # if tweet is not replying to anyone and does not match the above conditions
+                                    # tweet generic info on how to use the bot
+                                    if curr_tweet.in_reply_to_user_id is None:
+                                        info = '@' + curr_tweet.user.screen_name + ' Hello, I am a Haiku bot created by @Triple3Apple, ' \
                                          'I turn people\'s tweets into a wonderfully bad haiku! To use me and create a wonderfully ' \
                                          'bad haiku out of someone\'s tweet, create a quote tweet (click retweet and then "Quote Retweet") and @ me as a comment.'
 
-                                    hb.send_tweet(api=api, tweet_text=info, tweet_id=curr_tweet.id, tweet=curr_tweet)
+                                        hb.send_tweet(api=api, tweet_text=info, tweet_id=curr_tweet.id, tweet=curr_tweet)
+                                    else:
+                                        # do not record this tweet's info or reply
+                                        print('--- Not replying, user is replying to Bot/someone else ---')
+                                        continue
+
+                                    
 
                         else:
                             print('tweet is QUOTE RETWEET!')
