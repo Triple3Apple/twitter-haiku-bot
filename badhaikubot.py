@@ -248,6 +248,13 @@ def main():
                                     hb.send_tweet(api=api, tweet_text=help_info, tweet_id=curr_tweet.id, tweet=curr_tweet)
 
                                     print('help requested')
+                                elif '@MakeBadHaiku' in curr_tweet.text:
+                                    info = '@' + curr_tweet.user.screen_name + ' Hello, I am a Haiku bot created by @Triple3Apple, ' \
+                                         'I turn people\'s tweets into a wonderfully bad haiku! To use me and create a wonderfully ' \
+                                         'bad haiku out of someone\'s tweet, create a quote tweet (click retweet and then "Quote Retweet") and @ me as a comment.'
+
+                                    hb.send_tweet(api=api, tweet_text=info, tweet_id=curr_tweet.id, tweet=curr_tweet)
+                                    print('tweeted info on how to use bot')
                                 else:
                                     # if tweet is not replying to anyone and does not match the above conditions
                                     # tweet generic info on how to use the bot
