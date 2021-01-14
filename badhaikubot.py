@@ -293,10 +293,10 @@ def main():
                                 if random.randint(0, 20) == 10:
                                     # 5% chance to get "special" text
                                     greeting = f'@{curr_tweet.user.screen_name} {random.choice(haiku_text_intros)} \n\n{special_line}\n'
-                                    ending = f'\n{special_line}'
+                                    ending = f'\n{special_line} \n#Haiku'
                                 else:
                                     greeting = f'@{curr_tweet.user.screen_name} {random.choice(haiku_text_intros)} \n\n{random.choice(haiku_text_decor)}\n'
-                                    ending = f'\n{random.choice(haiku_text_decor)}'
+                                    ending = f'\n{random.choice(haiku_text_decor)} \n#Haiku'
 
                                 haiku_tweet = greeting + haiku + ending
 
