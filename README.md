@@ -1,5 +1,4 @@
 # twitter-haiku-bot
- A twitter bot that turns tweets into bad haikus
 <h1 align="center">
   <a name="logo" href="https://twitter.com/MakeBadHaiku"><img src="/Images/haiku bot github logo pic.png" alt="Twitter Haiku Bot Logo" width="200"></a>
   <br>
@@ -26,11 +25,11 @@ BadHaikuBot is twitter bot that transforms a user specified tweet into a BAD hai
  <li>Click the <b>Retweet</b> button</li>
  <li>Then select <b>Quote Retweet</b></li>
  <li>Finally add <code>@MakeBadHaiku</code> to the message of the Quote Retweet</li>
- <li>Click Tweet!</li>
+ <li>Click Tweet!  (Haiku will be sent after ~ 1 minute)</li>
 </ol>
 <h4>GIF Below for Demonstration</h4> 
 <h4 align="center">
 <img src="/Images/quote tweet gif higher res.gif" alt="Demo of how to create a bad haiku via the bot" width="600em">
- <\h4>
+</h4>
  
  
