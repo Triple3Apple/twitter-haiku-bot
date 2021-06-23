@@ -68,7 +68,7 @@ class HaikuBot:
 
         try:
             api.verify_credentials()
-            print("Authentication OK")
+            print("Authentication success")
         except:
             print("Error during authentication!")
             sys.exit("Error during authentication!")
@@ -121,11 +121,10 @@ class HaikuBot:
             print('Not a new mention')
             return False
         else:
-            print('New mention found!!!!')
+            print('New mention found')
             return True
 
     # resize list to desired size
-
     def resize_list(self, size):
         if len(self.recent_mentions) <= size:
             print('no need to resize..')
@@ -215,7 +214,7 @@ def main():
             # range(start, stop, step)
             # the following line will make start for loop at
             # last index, and decrement i
-            # why? in order to make it so the oldest entries are in
+            # Why? In order to make it so the oldest entries are in
             # the front of the "queue" --> 'recent_mentions' list
             for i in range(len(tweets) - 1, -1, -1):
                 if hb.is_new_tweet(tweets[i]):

@@ -5,16 +5,11 @@
 import syllapy
 import random
 
-
-# word = 'because'
-# print('syllable count for ' + word + ' is: ' + str(syllapy.count(word)))
-
 special_words = ['the', 'an', 'or', 'and', 'is',
                  'i', 'that', 'he', 'she', 'they',
                  'are', 'for', 'in', 'my', 'all',
                  'our', 'to', 'as', 'of']
 
-line = '☆ﾟ･｡°*. ﾟ'
 
 def make_haiku(text: str):
 
@@ -25,20 +20,10 @@ def make_haiku(text: str):
         return
     print('RECIEVED TEXT: ' + text)
 
-    # testing
-    # test = ["hey", "2020", "why2"]
-    # filter_out_words(test)
-    # print(str(test))
 
     words_list = seperate_to_words(text)
 
-    #print('before filtering: ')
-    #print(words_list[0:])
-
     filter_out_words(words_list)
-
-    #print('filtered word list:')
-    #print(words_list[0:])
 
     # NOTE: less than 5 words in tweet (BAD)
     if len(words_list) < 5:
