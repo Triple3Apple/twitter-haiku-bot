@@ -10,6 +10,8 @@ BadHaikuBot is twitter bot that transforms a user specified tweet into a BAD hai
 
 </p>
 
+<h3><a href="https://twitter.com/MakeBadHaiku">Click me to check it out!</a></h3>
+
 ### A Few Important Rules used to Make a Haiku:
 
 <ul>
