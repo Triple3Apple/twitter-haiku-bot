@@ -35,3 +35,5 @@ BadHaikuBot is twitter bot that transforms a user specified tweet into a BAD hai
 </h4>
  
  
+ ##### More updates coming soon maybe...
+ 
